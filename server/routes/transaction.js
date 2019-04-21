@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const transactionController = require('../controllers/transactionController')
 const { getCityId } = require('../middlewares/getCityId')
-const { authenticate, authorizationUser, adminCheck } = require('../middlewares/verify')
+const { authenticate, authorizationUser, authorizationTransaction, adminCheck } = require('../middlewares/verify')
 
 //
 // ─── FIND ALL TRANSACTIONS ──────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ router.post('/checkout/:id', authenticate, authorizationUser, transactionControl
 
 //
 // ─── CHANGE TRANSACTION STATUS ──────────────────────────────────────────────────
-router.patch('/:id', authenticate, transactionController.updateStatus)
+router.patch('/:id', authenticate, authorizationTransaction, transactionController.updateStatus)
 //
 
 //

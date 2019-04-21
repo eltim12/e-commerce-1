@@ -1,5 +1,6 @@
 const color = require('colors')
 const User = require('../models/user')
+const Transaction = require('../models/transaction')
 const tokenAuth = require('../helpers/token')
 
 
@@ -33,6 +34,26 @@ module.exports = {
                     res.status(401).json({
                         msg: 'not allowed!'
                     })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    },
+
+    authorizationTransaction(req, res, next) {
+        console.log('authorizing...'.red)
+        Transaction
+            .findOne({
+                userId: req.params.id
+            })
+            .then(found => {
+                if (found.userId.toString() === req.authenticated.userId.toString()) {
+                    console.log('user authorized!'.green.bold)
+
+                    next()
+                } else {
+                    next()
                 }
             })
             .catch(err => {
