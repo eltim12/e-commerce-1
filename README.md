@@ -45,9 +45,13 @@ Run this command in client folder:
 $npm run serve
 ```
 
- Access local Server side via http://localhost:3000/.
+Access local Server side: 
 
-Access local Client side via http://localhost:8080/.
+http://localhost:3000
+
+Access local Client side:
+
+http://localhost:8080
 
 
 
