@@ -52,11 +52,11 @@ Access local Client side:
 http://localhost:8080
 
 
-
-Online Demo Server side:
+## Demo
+Server side:
 
 http://hypeleash-server.michaeltim.com
 
-Online Demo Client side:
+Client side:
 
 http://hypeleash.michaeltim.com
