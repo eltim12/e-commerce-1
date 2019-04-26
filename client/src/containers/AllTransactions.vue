@@ -38,7 +38,7 @@
                 <h5>{{ transaction.address }}</h5>
               </td>
               <td>
-                <h5>Rp.{{ transaction.totalPrice.toLocaleString() }}</h5>
+                <h5>Rp.{{ transaction.totalPayment.toLocaleString() }}</h5>
               </td>
               <td>
                 <h5>{{ transaction.createdAt.slice(0,10) }}</h5>

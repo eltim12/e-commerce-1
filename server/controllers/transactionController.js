@@ -24,7 +24,7 @@ module.exports = {
                 res.status(201).json(data.rajaongkir.results[0].costs[0].cost[0].value)
             }
         } catch (err) {
-            console.log(err.message)
+            // console.log(err.message)
             if (err.message === "404") {
                 res.status(404).json({
                     msg: 'the address you provided was not found'
@@ -67,7 +67,6 @@ module.exports = {
                 res.status(201).json(transaction)
             }
         } catch (err) {
-            console.log(err.errors)
             if (err.errors.phone) {
                 res.status(400).json({
                     msg: err.errors.phone.message
@@ -118,7 +117,13 @@ module.exports = {
             .findById(req.params.id)
             .populate('productList')
             .then(found => {
-                res.status(200).json(found)
+                if (found) {
+                    res.status(200).json(found)
+                } else {
+                    res.status(404).json({
+                        msg: 'not Found.'
+                    })
+                }
             })
             .catch(err => {
                 res.status(500).json({

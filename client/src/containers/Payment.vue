@@ -131,6 +131,7 @@ export default {
   created() {
     this.userId = localStorage.getItem("userId");
     this.userCart = this.$store.state.userCart;
+    
     this.$store.state.userCart.map(e => {
       this.subTotal += e.price;
     });

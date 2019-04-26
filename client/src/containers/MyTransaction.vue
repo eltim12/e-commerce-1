@@ -43,7 +43,7 @@
               <h5>{{ transaction.createdAt.slice(0,10) }}</h5>
             </td>
             <td>
-              <h5>Rp.{{ transaction.totalPrice.toLocaleString() }}</h5>
+              <h5>Rp.{{ transaction.totalPayment.toLocaleString() }}</h5>
             </td>
             <td>
               <h5 style="color: #ca0029;" v-if="transaction.status === 'pending'">
@@ -94,10 +94,6 @@ export default {
         this.load = false;
         let totalPrice = 0;
         transactions.data.map(e => {
-          e.productList.forEach(p => {
-            totalPrice += p.price;
-          });
-          e.totalPrice = totalPrice;
           if (e.status === false) {
             e.status = "pending";
           } else {
@@ -113,6 +109,7 @@ export default {
   mounted() {},
   methods: {
     checkStatus(id) {
+      console.log(id)
       serverAPI
         .patch(`/transactions/${id}`, {
           headers: {
@@ -123,6 +120,7 @@ export default {
           this.updateInfo();
         })
         .catch(err => {
+          console.log('hehehhe')
           console.log(err);
         });
     },

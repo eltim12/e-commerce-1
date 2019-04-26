@@ -57,11 +57,6 @@ export default {
         this.productFound = products.data;
         this.load = false;
         this.scrollToEnd();
-        // var elem = this.$el;
-        // elem.scrollTop = elem.clientHeight;
-        // console.log(elem);
-        // container.scrollTop = container.scrollHeight;
-        // console.log(products.data);
       })
       .catch(err => {
         console.log(err);
@@ -70,7 +65,6 @@ export default {
   methods: {
     scrollToEnd() {
       var container = this.$el.querySelector("#container");
-      // container.scrollTop = container.scrollHeight;
     }
   }
 };

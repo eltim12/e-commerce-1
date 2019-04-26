@@ -72,11 +72,25 @@ module.exports = {
                         $push: { products: product._id }
                     })
             }
-            res.status(200).json(product)
+            res.status(201).json(product)
         } catch (err) {
-            res.status(500).json({
-                msg: err.message
-            })
+            if (err.errors.name) {
+                res.status(400).json({
+                    msg: err.errors.name.message
+                })
+            } else if (err.errors.stock) {
+                res.status(400).json({
+                    msg: err.errors.stock.message
+                })
+            } else if (err.errors.price) {
+                res.status(400).json({
+                    msg: err.errors.price.message
+                })
+            } else {
+                res.status(500).json({
+                    msg: err.message
+                })
+            }
         }
     },
 

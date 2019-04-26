@@ -7,7 +7,6 @@ module.exports = {
     },
     verify: function (token) {
         let tokenCheck = jwt.verify(token, process.env.SECRET_KEY)
-
         return tokenCheck
     }
 }

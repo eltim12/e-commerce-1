@@ -46,19 +46,17 @@ $npm run serve
 ```
 
 Access local Server side: 
-
 http://localhost:3000
 
-Access local Client side:
-
+Access local Client side: 
 http://localhost:8080
 
 
-
-Online Demo Server side:
+## Demo
+Server side:
 
 http://hypeleash-server.michaeltim.com
 
-Online Demo Client side:
+Client side:
 
-http://hypeleash.s3-website-ap-southeast-1.amazonaws.com/
+http://hypeleash.michaeltim.com

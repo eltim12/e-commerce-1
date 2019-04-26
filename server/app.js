@@ -10,7 +10,8 @@ mongoose.set("useFindAndModify", false)
 
 mongoose.connect(`mongodb+srv://${process.env.ATLAST_NAME}:${process.env.ATLAST_PW}@cluster0-sfchz.gcp.mongodb.net/e-commerce?retryWrites=true`, { useNewUrlParser: true })
 
-// mongoose.connect(`mongodb://localhost/e-commerce`, { useNewUrlParser: true })
+// mongoose.connect(`mongodb://localhost/e-commerce-testing`, { useNewUrlParser: true })
+
 
 app.use(express.urlencoded({ limit: '200mb', extended: false }));
 app.use(express.json({ limit: '200mb' }));

@@ -2,12 +2,36 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../app')
-const Product = require('../models/product')
-const User = require('../models/user')
 const colors = require('colors')
+const jwt = require('jsonwebtoken')
 const base64File = require('../base64file')
 
+const Product = require('../models/product')
+const User = require('../models/user')
+const Transaction = require('../models/transaction')
+
 chai.use(chaiHttp)
+
+before(done => {
+    Product
+        .deleteMany({}, () => {
+            done()
+        })
+})
+
+before(done => {
+    User
+        .deleteMany({}, () => {
+            done()
+        })
+})
+
+before(done => {
+    Transaction
+        .deleteMany({}, () => {
+            done()
+        })
+})
 
 after(done => {
     Product
@@ -23,10 +47,19 @@ after(done => {
         })
 })
 
+after(done => {
+    Transaction
+        .deleteMany({}, () => {
+            done()
+        })
+})
+
 let productId = ''
 let newProduct = {}
+let customerToken = ''
+let adminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWljaGFlbCBFbHRpbSIsImVtYWlsIjoiZWx0aW1AbWFpbC5jb20iLCJ1c2VySWQiOiI1Y2MxYzQ2MTNjNDMxMjU0MTdjYTQyYTgiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTYyMDI1OTN9.IbmvrAxaYejwstfjAUYJGQyZa7XLPiC7QgAPqV3fEz4'
 
-describe.only('Products'.bgWhite.black, function () {
+describe('Products'.bgWhite.black, function () {
     describe('POST /products'.underline, function () {
 
         describe('Success Test'.green, function () {
@@ -36,11 +69,15 @@ describe.only('Products'.bgWhite.black, function () {
                     name: 'Nike Shoes',
                     stock: 5,
                     price: 100,
-                    image: base64File
+                    image: base64File,
+                    brand: 'Nike'
                 }
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
                         expect(err).to.be.null
@@ -79,8 +116,12 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
+                        // console.log(res.status)
                         expect(err).to.be.null
                         expect(res).to.have.status(400)
                         expect(res.body).to.be.an('object')
@@ -99,6 +140,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
                         expect(err).to.be.null
@@ -119,6 +163,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
                         expect(err).to.be.null
@@ -140,6 +187,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
                         expect(err).to.be.null
@@ -150,6 +200,7 @@ describe.only('Products'.bgWhite.black, function () {
                         done()
                     })
             })
+
             it('should return status code 400 with message "Cast to Number failed for value "one" at path "price""', function (done) {
                 let product = {
                     name: "Nike Shoes",
@@ -160,6 +211,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .post(`/products`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(product)
                     .end(function (err, res) {
                         expect(err).to.be.null
@@ -167,6 +221,55 @@ describe.only('Products'.bgWhite.black, function () {
                         expect(res.body).to.be.an('object')
                         expect(res.body).to.have.property('msg')
                         expect(res.body.msg).to.be.equal('Cast to Number failed for value "two" at path "price"')
+                        done()
+                    })
+            })
+
+            it('register new user and get token', function (done) {
+                let user = {
+                    name: 'Michael Eltim',
+                    email: 'eltimss@mail.com',
+                    password: 'eltim123',
+                }
+
+                chai
+                    .request(app)
+                    .post(`/users/register`)
+                    .send(user)
+                    .end(function (err, res) {
+                        customerId = res.body._id
+                        let payload = {
+                            name: res.body.name,
+                            email: res.body.email,
+                            userId: res.body._id,
+                            role: res.body.role
+                        }
+                        customerToken = jwt.sign(payload, 'secret')
+                        done()
+                    })
+            })
+            it('should return status code 401 with message "not allowed!" if token is from customer', function (done) {
+                let product = {
+                    name: 'Nike Shoes',
+                    stock: 5,
+                    price: 100,
+                    image: base64File,
+                    brand: 'Nike'
+                }
+                chai
+                    .request(app)
+                    .post(`/products`)
+                    .set({
+                        token: customerToken
+                    })
+                    .send(product)
+                    .end(function (err, res) {
+                        console.log(res.body, res.status)
+                        expect(err).to.be.null
+                        expect(res).to.have.status(401)
+                        expect(res.body).to.be.an('object')
+                        expect(res.body).to.have.property('msg')
+                        expect(res.body.msg).to.be.equal('not allowed!')
                         done()
                     })
             })
@@ -190,7 +293,9 @@ describe.only('Products'.bgWhite.black, function () {
                         done()
                     })
             })
+
         })
+
     })
 
     describe('GET /products/:id'.underline, function () {
@@ -261,6 +366,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .patch(`/products/${productId}`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(updateData)
                     .end(function (err, res) {
 
@@ -303,6 +411,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .patch(`/products/5cb5799176fe6028a9de201f`)
+                    .set({
+                        token: adminToken
+                    })
                     .send(updateData)
                     .end(function (err, res) {
 
@@ -316,6 +427,31 @@ describe.only('Products'.bgWhite.black, function () {
                         done()
                     })
             })
+
+            it('should return status code 401 with message "not allowed!" if token is from customer', function (done) {
+                let product = {
+                    name: 'Nike Shoes',
+                    stock: 5,
+                    price: 100,
+                    image: base64File,
+                    brand: 'Nike'
+                }
+                chai
+                    .request(app)
+                    .patch(`/products/:id`)
+                    .set({
+                        token: customerToken
+                    })
+                    .send(product)
+                    .end(function (err, res) {
+                        expect(err).to.be.null
+                        expect(res).to.have.status(401)
+                        expect(res.body).to.be.an('object')
+                        expect(res.body).to.have.property('msg')
+                        expect(res.body.msg).to.be.equal('not allowed!')
+                        done()
+                    })
+            })
         })
     })
 
@@ -326,6 +462,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .delete(`/products/${productId}`)
+                    .set({
+                        token: adminToken
+                    })
                     .end(function (err, res) {
                         expect(err).to.be.null
                         expect(res).to.have.status(200)
@@ -359,6 +498,9 @@ describe.only('Products'.bgWhite.black, function () {
                 chai
                     .request(app)
                     .delete(`/products/5cb5799176fe6028a9de201f`)
+                    .set({
+                        token: adminToken
+                    })
                     .end(function (err, res) {
 
                         expect(err).to.be.null
@@ -368,6 +510,31 @@ describe.only('Products'.bgWhite.black, function () {
                         expect(res.body.msg).to.be.a('string')
                         expect(res.body.msg).to.be.equal('not Found.')
 
+                        done()
+                    })
+            })
+
+            it('should return status code 401 with message "not allowed!" if token is from customer', function (done) {
+                let product = {
+                    name: 'Nike Shoes',
+                    stock: 5,
+                    price: 100,
+                    image: base64File,
+                    brand: 'Nike'
+                }
+                chai
+                    .request(app)
+                    .delete(`/products/:id`)
+                    .set({
+                        token: customerToken
+                    })
+                    .send(product)
+                    .end(function (err, res) {
+                        expect(err).to.be.null
+                        expect(res).to.have.status(401)
+                        expect(res.body).to.be.an('object')
+                        expect(res.body).to.have.property('msg')
+                        expect(res.body.msg).to.be.equal('not allowed!')
                         done()
                     })
             })
